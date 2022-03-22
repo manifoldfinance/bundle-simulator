@@ -32,8 +32,10 @@ def main():
     platformAccount = accounts.at('0x4F680254517617C175e223b37C8e40c473623647', force=True)
     
     # deploy flashloan contract
-    print("Deploy flashloan contract")
-    flashloanContract = AaveFlashloanMultiRouter.deploy([platformAccount.address],[platformAccount.address], {"from": platformAccount})
+    # print("Deploy flashloan contract")
+    # flashloanContract = AaveFlashloanMultiRouter.deploy([platformAccount.address],[platformAccount.address], {"from": platformAccount})
+    flashloanContractAbi = json.load(open('build/contracts/AaveFlashloanMultiRouter.json'))["abi"]
+    flashloanContract = Contract.from_abi("FlashLoan","0x98b8957bc3EC8f7267Ac6F41Bc381966Ed22E4Af",flashloanContractAbi)
 
     # router =  SUSHI_ROUTER
     amountIn = 8750000000000000000000
