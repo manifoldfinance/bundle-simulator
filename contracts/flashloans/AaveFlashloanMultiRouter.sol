@@ -1,4 +1,8 @@
-// SPDX-License-Identifier: UNLICENSED
+/// SPDX-License-Identifier: MPL-2.0
+// Creator: Manifold Finance
+// PackageName: @securerpc/simulate-bundle
+// PackageOriginator: ManifoldFinance
+// PackageHomePage: https://github.com/manifoldfinance/securerpc-simulate-bundle
 
 pragma solidity >=0.8.0 <0.9.0;
 
@@ -31,7 +35,10 @@ contract AaveFlashloanMultiRouter is AccessControl {
         uint256 deadline
     ) external onlyRole(EXECUTOR_ROLE) {
         require(tokens.length > 1, "AaveFlashloanMultiRouter: tokens.length <= 1");
-        require(routers.length == tokens.length - 1, "AaveFlashloanMultiRouter: routers.length != tokens.length - 1");
+        require(
+            routers.length == tokens.length - 1,
+            "AaveFlashloanMultiRouter: routers.length != tokens.length - 1"
+        );
         require(amount > 0, "AaveFlashloanMultiRouter: amount == 0");
         require(deadline >= block.timestamp, "AaveFlashloanMultiRouter: Expired deadline");
 
@@ -59,7 +66,15 @@ contract AaveFlashloanMultiRouter is AccessControl {
         // referral to nobody
         uint16 referralCode = 0;
 
-        ILendingPool(LENDING_POOL_ADDRESS).flashLoan(receiverAddress, assets, amounts, modes, onBehalfOf, params, referralCode);
+        ILendingPool(LENDING_POOL_ADDRESS).flashLoan(
+            receiverAddress,
+            assets,
+            amounts,
+            modes,
+            onBehalfOf,
+            params,
+            referralCode
+        );
     }
 
     // Called after your contract has received the flash loaned amount
@@ -71,12 +86,13 @@ contract AaveFlashloanMultiRouter is AccessControl {
         address initiator,
         bytes calldata params
     ) external returns (bool) {
-        require(msg.sender == LENDING_POOL_ADDRESS, "AaveFlashloanMultiRouter: msg.sender != lendingPoolAddress");
-
-        (address[] memory routers, address[] memory tokens, uint256 deadline, address sender) = abi.decode(
-            params,
-            (address[], address[], uint256, address)
+        require(
+            msg.sender == LENDING_POOL_ADDRESS,
+            "AaveFlashloanMultiRouter: msg.sender != lendingPoolAddress"
         );
+
+        (address[] memory routers, address[] memory tokens, uint256 deadline, address sender) = abi
+            .decode(params, (address[], address[], uint256, address));
 
         // approve & swap
         _swapExactTokensForTokens(routers, tokens, amounts[0], initiator, deadline);
@@ -88,7 +104,10 @@ contract AaveFlashloanMultiRouter is AccessControl {
 
             // approve loan re-payment and transfer amount left over back to sender
             uint256 amountOver = IERC20(asset).balanceOf(initiator);
-            require(amountOver > amountOwing, "AaveFlashloanMultiRouter: Not enough to re-pay loan");
+            require(
+                amountOver > amountOwing,
+                "AaveFlashloanMultiRouter: Not enough to re-pay loan"
+            );
 
             IERC20(asset).safeApprove(LENDING_POOL_ADDRESS, amountOwing);
 
@@ -115,7 +134,10 @@ contract AaveFlashloanMultiRouter is AccessControl {
         IERC20(token).safeTransfer(recipient, amount);
     }
 
-    function withdrawERC20s(address[] calldata tokens, address recipient) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function withdrawERC20s(address[] calldata tokens, address recipient)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
         require(tokens.length > 0, "AaveFlashloanMultiRouter: tokens.length > 0");
         for (uint256 i = 0; i < tokens.length; i++) {
             withdrawERC20(tokens[i], recipient);
@@ -143,11 +165,20 @@ contract AaveFlashloanMultiRouter is AccessControl {
             IERC20(tokens[i]).safeApprove(routers[i], amounts[i]);
 
             uint256 allowance = IERC20(tokens[i]).allowance(to, routers[i]);
-            require(allowance >= amounts[i], "AaveFlashloanMultiRouter: Not enough token allowance");
+            require(
+                allowance >= amounts[i],
+                "AaveFlashloanMultiRouter: Not enough token allowance"
+            );
 
             path[0] = tokens[i];
             path[1] = tokens[i + 1];
-            uint256[] memory amts = IUniswapV2Router02(routers[i]).swapExactTokensForTokens(amounts[i], 0, path, to, deadline);
+            uint256[] memory amts = IUniswapV2Router02(routers[i]).swapExactTokensForTokens(
+                amounts[i],
+                0,
+                path,
+                to,
+                deadline
+            );
             amounts[i + 1] = amts[amts.length - 1];
         }
     }
@@ -161,10 +192,16 @@ contract AaveFlashloanMultiRouter is AccessControl {
     }
 
     function _grantRole(address[] memory allowed, bytes32 role) internal {
-        require(allowed.length > 0, "AaveFlashloanMultiRouter: At least one address needs to be present to grant a role");
+        require(
+            allowed.length > 0,
+            "AaveFlashloanMultiRouter: At least one address needs to be present to grant a role"
+        );
         for (uint256 i = 0; i < allowed.length; i++) {
             address a = allowed[i];
-            require(a != address(0), "AaveFlashloanMultiRouter: Empty address is invalid as to designate a role");
+            require(
+                a != address(0),
+                "AaveFlashloanMultiRouter: Empty address is invalid as to designate a role"
+            );
             _setupRole(role, a);
         }
     }
