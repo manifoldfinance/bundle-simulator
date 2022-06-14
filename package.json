@@ -1,0 +1,38 @@
+{
+  "name": "@manifoldfinance/bundle-simulator",
+  "version": "0.1.0",
+  "description": "Standalone repo for simulating specific bundles that need debugging.",
+  "files": [
+    "/dist/**/*",
+    "/contracts",
+    "/contracts/base",
+    "/contracts/interfaces",
+    "/contracts/libraries",
+    "/artifacts/contracts/**/*.json",
+    "!artifacts/contracts/**/*.dbg.json",
+    "!artifacts/contracts/test/**/*",
+    "!artifacts/contracts/base/**/*"
+  ],
+  "scripts": {
+    "fmt": "npx prettier --config prettier.config.cjs --write contracts/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/manifoldfinance/bundle-simulator.git"
+  },
+  "keywords": [],
+  "author": "SEE CONTRIBUTORS",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/manifoldfinance/bundle-simulator/issues"
+  },
+  "homepage": "https://github.com/manifoldfinance/bundle-simulator#readme",
+  "devDependencies": {
+    "prettier": "^2.6.2",
+    "prettier-config-solidity": "^1.7.0",
+    "prettier-plugin-solidity": "^1.0.0-beta.19"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.6.0"
+  }
+}

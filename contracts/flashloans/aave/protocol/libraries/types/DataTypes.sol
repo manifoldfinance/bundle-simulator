@@ -1,4 +1,8 @@
-// SPDX-License-Identifier: agpl-3.0
+/// SPDX-License-Identifier: MPL-2.0
+// Creator: Manifold Finance
+// PackageName: @securerpc/simulate-bundle
+// PackageOriginator: ManifoldFinance
+// PackageHomePage: https://github.com/manifoldfinance/securerpc-simulate-bundle
 
 pragma solidity >=0.8.0 <0.9.0;
 
