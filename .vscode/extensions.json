@@ -1,6 +1,3 @@
 {
-    "recommendations": [
-        "nomicfoundation.hardhat-solidity",
-        "znck.grammarly"
-    ]
+  "recommendations": ["nomicfoundation.hardhat-solidity", "znck.grammarly"]
 }

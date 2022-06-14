@@ -48,6 +48,7 @@ brownie run backrun_test1.py --network backrun1
 ```
 
 Result:
+
 ```python
 Running 'scripts/backrun_test1.py::main'...
 
@@ -77,4 +78,5 @@ Platform post-arb weth balance:  1160664762353910714
 ```
 
 ### Debugging
+
 [See Brownie docs for info on tx tracing](https://eth-brownie.readthedocs.io/en/stable/core-transactions.html)
