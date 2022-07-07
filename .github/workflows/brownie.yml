@@ -1,18 +1,14 @@
 on:
   push:
-    paths:
-      - 'tests/**/*.py'
-      - 'contracts/**/*.sol'
 
-name: Brownie tests
+name: 'Bundle simulator'
 
 env:
   ETHERSCAN_TOKEN: ${{ secrets.ETHERSCAN_TOKEN }}
   ETHERSCAN_API: ${{ secrets.ETHERSCAN_API }}
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  WEB3_INFURA_PROJECT_ID: ${{ secrets.WEB3_INFURA_PROJECT_ID }}
-  ETH_RPC_URL: ${{ secrets.ETH_RPC_URL }}
-
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+  WEB3_INFURA_PROJECT_ID:  ${{ secrets.WEB3_INFURA_PROJECT_ID }} 
+  ETH_RPC_URL:  ${{ secrets.ETH_RPC_URL }} 
   # increasing available memory for node reduces issues with ganache crashing
   # https://nodejs.org/api/cli.html#cli_max_old_space_size_size_in_megabytes
   NODE_OPTIONS: --max_old_space_size=4096
@@ -22,38 +18,37 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-        with:
-          submodules: recursive
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        submodules: recursive
 
-      - name: Cache Compiler Installations
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.solcx
-            ~/.vvm
-          key: compiler-cache
+    - name: Get yarn cache directory path
+      id: yarn-cache-dir-path
+      run: echo "::set-output name=dir::$(yarn cache dir)"
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+    - uses: actions/cache@v3
+      id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+      with:
+        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+    - name: Install project dependencies
+      run: yarn --prefer-offline
+      id: install
 
-      # - name: Setup Node.js
-      #   run: yarn install
+    - name: Install Foundry
+      uses: foundry-rs/foundry-toolchain@v1
+      with:
+        version: nightly
 
-      - name: Install Ganache
-        run: npm install -g ganache-cli@6.12.2
+    - name: forge install contract
+      run: forge install
 
-      - name: Setup Python 3.9
-        uses: actions/setup-python@v3
-        with:
-          python-version: 3.9
-          cache: 'pip'
-
-      - name: Install Requirements
-        run: pip install -r requirements.txt
-
-      - name: Configure test state
-        run: brownie networks add development mainnet-fork1 cmd="ganache-cli" host=http://127.0.0.1 fork="$ETH_RPC_URL@14161345" accounts=10 mnemonic=brownie port=8545 timeout=100
-
-      - name: Run Tests
-        run: brownie test --network mainnet-fork1
+    - uses: extractions/setup-just@v1
+    - name: Forge Build
+      id: build
+      run: just build
