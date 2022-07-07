@@ -80,3 +80,30 @@ Platform post-arb weth balance:  1160664762353910714
 ### Debugging
 
 [See Brownie docs for info on tx tracing](https://eth-brownie.readthedocs.io/en/stable/core-transactions.html)
+
+
+### CI Actions
+
+Usage in a GitHub action should be setup like this:
+
+>**Note**   
+> We use Blocks of 0 transactions as a `baseline` and heavy blocks (>300) for mocking `mev` blocks
+
+```yaml
+    - name: Configure test state
+      id: mevstate
+      run: brownie networks add development mainnet-fork1 cmd="ganache-cli" host=http://127.0.0.1 fork="$ETH_RPC_URL@15025412" accounts=10 mnemonic=brownie port=8545 timeout=180
+
+    - name: Run Tests
+      id: mevtest
+      run: brownie test --network mainnet-fork1
+      
+      
+    - name: Configure test state
+      id: basestate
+      run: brownie networks add development mainnet-fork2 cmd="ganache-cli" host=http://127.0.0.1 fork="$ETH_RPC_URL@15025227" accounts=10 mnemonic=brownie port=8545 timeout=180
+
+    - name: Run Tests
+      id: baseline
+      run: brownie test --network mainnet-fork2
+```

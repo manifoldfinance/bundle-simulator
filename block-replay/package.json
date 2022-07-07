@@ -1,0 +1,19 @@
+{
+  "name": "bundle-simulator-hardhat",
+  "version": "0.0.0",
+  "private": true,
+  "main": "index.ts",
+  "scripts": {
+    "check": "ts-node index.ts",
+    "run": "hardhat run ./index.ts --network localhost"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "hardhat": "^2.9.0",
+    "@types/node": "^14",
+    "dotenv": "^10.0.0",
+    "ethers": "^5.5.3",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.5.4"
+  }
+}
